@@ -1,0 +1,30 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Parking Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-card">
+            <h2>Login</h2>
+            <form method="post">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input id="username" name="username" placeholder="Enter your username" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+                {% if error %}<p class="error-message">{{ error }}</p>{% endif %}
+            </form>
+            <p class="auth-link">Don't have an account? <a href="/signup">Sign up</a></p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,407 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Spots Editor - {{ lot_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .editor-container {
+            max-width: 100%;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 20px;
+            border: 2px solid #dadce0;
+            border-radius: 8px;
+        }
+        
+        #editor-canvas {
+            cursor: crosshair;
+            background-image: url('data:image/jpeg;base64,{{ frame_base64 }}');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .status-message {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .instructions {
+            background-color: #fef8e7;
+            border-left: 4px solid #fbbc05;
+            padding: 16px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .instructions h3 {
+            margin-top: 0;
+            color: #202124;
+            margin-bottom: 12px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            margin-bottom: 0;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .spot-count {
+            background-color: #e8f0fe;
+            border-left: 4px solid #1a73e8;
+            padding: 10px 16px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .success-message {
+            background-color: #e6f4ea;
+            border-left: 4px solid #0f9d58;
+            padding: 10px 16px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            font-weight: 500;
+            color: #0f9d58;
+            display: none;
+        }
+        
+        .error-message {
+            background-color: #fce8e6;
+            border-left: 4px solid #d93025;
+            padding: 10px 16px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            font-weight: 500;
+            color: #d93025;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <h1 class="brand">ParkSmart Admin</h1>
+            <div class="nav-links">
+                <a href="/admin" class="nav-link">Back to Admin</a>
+                <a href="/" class="nav-link">Home</a>
+                <a href="/logout" class="btn btn-outline">Logout</a>
+            </div>
+        </nav>
+        
+        <div class="content">
+            <h2 class="page-title">Draw Parking Spots: {{ lot_name }}</h2>
+            
+            <div class="instructions">
+                <h3>How to Draw Parking Spots</h3>
+                <ol>
+                    <li>Click at each corner of a parking spot to create a 4-point polygon.</li>
+                    <li>After placing 4 points, the spot will be automatically completed.</li>
+                    <li>Continue adding spots as needed for each parking space.</li>
+                    <li>Use the "Clear Last" button to remove the last created spot.</li>
+                    <li>Use the "Clear All" button to start over.</li>
+                    <li>Click "Save Bounding Boxes" when finished.</li>
+                </ol>
+            </div>
+            
+            <div class="spot-count">Parking Spots: <span id="spot-counter">0</span></div>
+            <div id="success-message" class="success-message">Bounding boxes saved successfully!</div>
+            <div id="error-message" class="error-message">Error saving bounding boxes!</div>
+            
+            <div class="controls">
+                <div class="control-buttons">
+                    <button id="clear-last-btn" class="btn btn-outline">Clear Last Spot</button>
+                    <button id="clear-all-btn" class="btn btn-outline">Clear All Spots</button>
+                </div>
+                <button id="save-btn" class="btn btn-primary">Save Bounding Boxes</button>
+            </div>
+            
+            <div class="editor-container">
+                <canvas id="editor-canvas" width="{{ frame_width }}" height="{{ frame_height }}"></canvas>
+            </div>
+            
+            <div class="form-buttons">
+                <a href="/admin" class="btn btn-outline">Back to Admin Dashboard</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('editor-canvas');
+        const ctx = canvas.getContext('2d');
+        const frameWidth = {{ frame_width }};
+        const frameHeight = {{ frame_height }};
+        
+        // Editor state
+        let currentSpot = [];
+        let spots = [];
+        let isDragging = false;
+        let dragPointIndex = -1;
+        let dragSpotIndex = -1;
+        const pointRadius = 6;
+        
+        // Load existing boxes if available
+        const existingBoxes = {{ existing_boxes|safe }};
+        if (existingBoxes && existingBoxes.length > 0) {
+            spots = [...existingBoxes];
+            updateSpotCounter();
+            redrawCanvas();
+        }
+        
+        // UI elements
+        const clearLastBtn = document.getElementById('clear-last-btn');
+        const clearAllBtn = document.getElementById('clear-all-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const spotCounter = document.getElementById('spot-counter');
+        const successMessage = document.getElementById('success-message');
+        const errorMessage = document.getElementById('error-message');
+        
+        // Event listeners
+        canvas.addEventListener('mousedown', handleMouseDown);
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('mouseup', handleMouseUp);
+        clearLastBtn.addEventListener('click', clearLastSpot);
+        clearAllBtn.addEventListener('click', clearAllSpots);
+        saveBtn.addEventListener('click', saveBoundingBoxes);
+        
+        // Mouse handling
+        function handleMouseDown(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Check if clicked on an existing point (for dragging)
+            for (let i = 0; i < spots.length; i++) {
+                for (let j = 0; j < spots[i].length; j++) {
+                    const point = spots[i][j];
+                    if (isPointClicked(point, x, y)) {
+                        isDragging = true;
+                        dragPointIndex = j;
+                        dragSpotIndex = i;
+                        return;
+                    }
+                }
+            }
+            
+            // If not dragging, add a point to the current spot
+            if (currentSpot.length < 4) {
+                currentSpot.push([x, y]);
+                
+                // If we have 4 points, complete the parking spot
+                if (currentSpot.length === 4) {
+                    spots.push([...currentSpot]);
+                    currentSpot = [];
+                    updateSpotCounter();
+                }
+                
+                redrawCanvas();
+            }
+        }
+        
+        function handleMouseMove(e) {
+            if (isDragging && dragPointIndex !== -1 && dragSpotIndex !== -1) {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                spots[dragSpotIndex][dragPointIndex] = [x, y];
+                redrawCanvas();
+            }
+        }
+        
+        function handleMouseUp() {
+            isDragging = false;
+            dragPointIndex = -1;
+            dragSpotIndex = -1;
+        }
+        
+        function isPointClicked(point, x, y) {
+            const [px, py] = point;
+            const dx = px - x;
+            const dy = py - y;
+            return (dx * dx + dy * dy) <= (pointRadius * pointRadius);
+        }
+        
+        // Drawing functions
+        function redrawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw completed spots
+            for (const spot of spots) {
+                drawSpot(spot, 'rgba(0, 255, 0, 0.3)', 'green');
+            }
+            
+            // Draw current spot
+            if (currentSpot.length > 0) {
+                drawPartialSpot(currentSpot, 'rgba(255, 255, 0, 0.3)', 'yellow');
+            }
+        }
+        
+        function drawSpot(points, fillColor, strokeColor) {
+            if (points.length < 3) return;
+            
+            ctx.beginPath();
+            ctx.moveTo(points[0][0], points[0][1]);
+            
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i][0], points[i][1]);
+            }
+            
+            ctx.closePath();
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw the corners
+            for (const point of points) {
+                ctx.beginPath();
+                ctx.arc(point[0], point[1], pointRadius, 0, Math.PI * 2);
+                ctx.fillStyle = 'blue';
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+        }
+        
+        function drawPartialSpot(points, fillColor, strokeColor) {
+            if (points.length < 2) {
+                // Just draw points
+                for (const point of points) {
+                    ctx.beginPath();
+                    ctx.arc(point[0], point[1], pointRadius, 0, Math.PI * 2);
+                    ctx.fillStyle = 'red';
+                    ctx.fill();
+                    ctx.strokeStyle = 'white';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+                return;
+            }
+            
+            // Draw the lines between points
+            ctx.beginPath();
+            ctx.moveTo(points[0][0], points[0][1]);
+            
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i][0], points[i][1]);
+            }
+            
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw the points
+            for (const point of points) {
+                ctx.beginPath();
+                ctx.arc(point[0], point[1], pointRadius, 0, Math.PI * 2);
+                ctx.fillStyle = 'red';
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+        }
+        
+        // Button actions
+        function clearLastSpot() {
+            if (currentSpot.length > 0) {
+                currentSpot = [];
+            } else if (spots.length > 0) {
+                spots.pop();
+                updateSpotCounter();
+            }
+            
+            redrawCanvas();
+        }
+        
+        function clearAllSpots() {
+            if (confirm('Are you sure you want to clear all spots?')) {
+                spots = [];
+                currentSpot = [];
+                updateSpotCounter();
+                redrawCanvas();
+            }
+        }
+        
+        async function saveBoundingBoxes() {
+            try {
+                // Hide any previous messages
+                successMessage.style.display = 'none';
+                errorMessage.style.display = 'none';
+                
+                // Validate
+                if (spots.length === 0) {
+                    alert('Please draw at least one parking spot before saving.');
+                    return;
+                }
+                
+                for (const spot of spots) {
+                    if (spot.length !== 4) {
+                        alert('All parking spots must have exactly 4 points.');
+                        return;
+                    }
+                }
+                
+                const response = await fetch('/admin/save_bounding_boxes/{{ lot_id }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        boxes: spots,
+                        editorWidth: frameWidth,
+                        editorHeight: frameHeight
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    successMessage.textContent = result.message || 'Bounding boxes saved successfully!';
+                    successMessage.style.display = 'block';
+                    
+                    // Auto-hide success message after 3 seconds
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 3000);
+                } else {
+                    errorMessage.textContent = result.error || 'Error saving bounding boxes.';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error saving bounding boxes:', error);
+                errorMessage.textContent = 'Error saving bounding boxes: ' + error.message;
+                errorMessage.style.display = 'block';
+            }
+        }
+        
+        function updateSpotCounter() {
+            spotCounter.textContent = spots.length;
+        }
+    </script>
+</body>
+</html>

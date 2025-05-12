@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Parking Lot - Parking Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <h1 class="brand">ParkSmart Admin</h1>
+            <div class="nav-links">
+                <a href="/admin" class="nav-link">Back to Admin</a>
+                <a href="/" class="nav-link">Home</a>
+                <a href="/logout" class="btn btn-outline">Logout</a>
+            </div>
+        </nav>
+        
+        <div class="content">
+            <h2 class="page-title">Setup New Parking Lot</h2>
+            
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="flash-message">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="form-container">
+                <form method="post" class="admin-form" enctype="multipart/form-data">
+                    <div class="input-group">
+                        <label for="lot_id">Lot ID (unique identifier)</label>
+                        <input id="lot_id" name="lot_id" placeholder="e.g., north_lot" required>
+                        <small>Use lowercase letters, numbers, and underscores only</small>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="name">Lot Name (display name)</label>
+                        <input id="name" name="name" placeholder="e.g., North Parking Lot" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="video_file">Video File</label>
+                        <input type="file" id="video_file" name="video_file" accept="video/*" required>
+                        <small>Upload a video file of the parking lot</small>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="model_path">Model Path</label>
+                        <input id="model_path" name="model_path" value="best (4).pt" required>
+                        <small>Path to YOLO model file relative to application directory</small>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h3>Process:</h3>
+                        <ol>
+                            <li>Upload a video of the parking lot</li>
+                            <li>The first frame will be extracted automatically</li>
+                            <li>A window will open to select parking spots</li>
+                            <li>Click to create 4-point polygons for each parking spot</li>
+                            <li>Click "Save" when finished</li>
+                            <li>The parking lot will be automatically configured</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <a href="/admin" class="btn btn-outline">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Upload and Setup</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

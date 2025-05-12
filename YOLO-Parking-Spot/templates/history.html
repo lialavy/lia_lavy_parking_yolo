@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - Parking Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <h1 class="brand">ParkSmart</h1>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/logout" class="btn btn-outline">Logout</a>
+            </div>
+        </nav>
+        
+        <div class="content">
+            <div class="lot-selector">
+                <h2 class="page-title">Parking Log History: {{ active_lot_name }}</h2>
+                
+                <form method="post" action="/set_active_lot" class="lot-selection-form">
+                    <label for="lot_select">Select Parking Lot:</label>
+                    <select id="lot_select" name="lot_id" onchange="this.form.submit()">
+                        {% for lot_id, lot in parking_lots.items() %}
+                            <option value="{{ lot_id }}" {% if lot_id == active_lot %}selected{% endif %}>
+                                {{ lot.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+            
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Occupied</th>
+                            <th>Available</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in log %}
+                        <tr>
+                            <td>{{ entry.time }}</td>
+                            <td>{{ entry.occupied }}</td>
+                            <td>{{ entry.available }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% if not log %}
+                        <tr>
+                            <td colspan="3" class="no-data">No history data available</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

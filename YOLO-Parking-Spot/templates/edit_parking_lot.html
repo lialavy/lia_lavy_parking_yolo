@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Parking Lot - Parking Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <h1 class="brand">ParkSmart Admin</h1>
+            <div class="nav-links">
+                <a href="/admin" class="nav-link">Back to Admin</a>
+                <a href="/" class="nav-link">Home</a>
+                <a href="/logout" class="btn btn-outline">Logout</a>
+            </div>
+        </nav>
+        
+        <div class="content">
+            <h2 class="page-title">Edit Parking Lot: {{ lot.name }}</h2>
+            
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="flash-message">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="form-container">
+                <form method="post" class="admin-form">
+                    <div class="input-group">
+                        <label for="lot_id">Lot ID</label>
+                        <input id="lot_id" value="{{ lot_id }}" disabled>
+                        <small>ID cannot be changed</small>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="name">Lot Name (display name)</label>
+                        <input id="name" name="name" value="{{ lot.name }}" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="video_source">Video Source</label>
+                        <input id="video_source" name="video_source" value="{{ lot.video_source }}" required>
+                        <small>Path to video file relative to application directory</small>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="model_path">Model Path</label>
+                        <input id="model_path" name="model_path" value="{{ lot.model_path }}" required>
+                        <small>Path to YOLO model file relative to application directory</small>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="bounding_boxes">Bounding Boxes File</label>
+                        <input id="bounding_boxes" name="bounding_boxes" value="{{ lot.bounding_boxes }}" required>
+                        <small>Path to JSON file containing parking spot coordinates</small>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <a href="/admin" class="btn btn-outline">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Update Parking Lot</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Parking Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}" defer></script>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <h1 class="brand">ParkSmart</h1>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/history" class="nav-link">History</a>
+                <a href="/logout" class="btn btn-outline">Logout</a>
+            </div>
+        </nav>
+        
+        <div class="content">
+            <div class="lot-selector">
+                <h2 class="page-title">Live Parking Dashboard: {{ active_lot_name }}</h2>
+                
+                <form method="post" action="/set_active_lot" class="lot-selection-form">
+                    <label for="lot_select">Select Parking Lot:</label>
+                    <select id="lot_select" name="lot_id" onchange="this.form.submit()">
+                        {% for lot_id, lot in parking_lots.items() %}
+                            <option value="{{ lot_id }}" {% if lot_id == active_lot %}selected{% endif %}>
+                                {{ lot.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+            
+            <div class="status-cards">
+                <div class="status-card">
+                    <div class="status-icon occupied">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6" y2="6"></line><line x1="6" y1="18" x2="6" y2="18"></line></svg>
+                    </div>
+                    <div class="status-info">
+                        <div class="status-label">Occupied Slots</div>
+                        <div class="status-value" id="occupied">0</div>
+                    </div>
+                </div>
+                
+                <div class="status-card">
+                    <div class="status-icon available">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+                    </div>
+                    <div class="status-info">
+                        <div class="status-label">Available Slots</div>
+                        <div class="status-value" id="available">0</div>
+                    </div>
+                </div>
+                
+                <div class="status-card">
+                    <div class="status-icon time">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <div class="status-info">
+                        <div class="status-label">Last Updated</div>
+                        <div class="status-value timestamp" id="last_updated">--</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="video-container">
+                <img src="/video_feed" alt="Parking Camera Feed" class="video-feed">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

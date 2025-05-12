@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Bounding Boxes - Parking Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <h1 class="brand">ParkSmart Admin</h1>
+            <div class="nav-links">
+                <a href="/admin" class="nav-link">Back to Admin</a>
+                <a href="/" class="nav-link">Home</a>
+                <a href="/logout" class="btn btn-outline">Logout</a>
+            </div>
+        </nav>
+        
+        <div class="content">
+            <h2 class="page-title">Create Bounding Boxes</h2>
+            
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="flash-message">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="form-container">
+                <div class="card">
+                    <h3>Select Parking Lot</h3>
+                    <form method="get" class="admin-form">
+                        <div class="input-group">
+                            <label for="lot_select">Select Parking Lot:</label>
+                            <select id="lot_select" name="lot_id" onchange="this.form.submit()">
+                                <option value="">-- Select a parking lot --</option>
+                                {% for lot_id, lot in parking_lots.items() %}
+                                    <option value="{{ lot_id }}" {% if lot_id == selected_lot %}selected{% endif %}>
+                                        {{ lot.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                
+                {% if selected_lot %}
+                <div class="card" style="margin-top: 20px;">
+                    <h3>Parking Lot: {{ parking_lots[selected_lot].name }}</h3>
+                    <div class="image-preview" style="margin: 20px 0;">
+                        <img src="/get_parking_image/{{ selected_lot }}" 
+                             alt="{{ parking_lots[selected_lot].name }}" 
+                             style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div class="info-box">
+                        <p><strong>Image file:</strong> {{ parking_lots[selected_lot].image_source }}</p>
+                        <p><strong>Video file:</strong> {{ parking_lots[selected_lot].video_source }}</p>
+                        <p><strong>Bounding boxes file:</strong> {{ parking_lots[selected_lot].bounding_boxes }}</p>
+                    </div>
+                    
+                    <button onclick="startBBoxTool('{{ selected_lot }}')" class="btn btn-primary">
+                        Create Bounding Boxes on Image
+                    </button>
+                    
+                    <p class="help-text" style="margin-top: 16px;">
+                        This will open the bounding box selection tool with the image file. 
+                        The bounding boxes you draw on the image will be used for detecting parking spots in the video:
+                        <ul>
+                            <li>The tool will automatically load the image file</li>
+                            <li>Click 4 points to create a parking spot boundary</li>
+                            <li>Right-click to remove the last box</li>
+                            <li>Click "Save" to save the bounding boxes to: {{ parking_lots[selected_lot].bounding_boxes }}</li>
+                            <li>These boundaries will be applied to the video for real-time detection</li>
+                        </ul>
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    function startBBoxTool(lotId) {
+        // Send request to start the bbox tool on the server
+        fetch('/admin/start_bbox_tool', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({lot_id: lotId})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('The bounding box tool has been started. The image will be automatically loaded. Please check the application window.');
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to start the bounding box tool');
+        });
+    }
+    </script>
+</body>
+</html>
