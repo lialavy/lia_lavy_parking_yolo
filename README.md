@@ -1,10 +1,7 @@
-t
 התקנת תוכנות מקדימות
-יש ראשית להוריד Python למחשב האישי שלכם, במידה ואין לכם, בקישור הבא:
-https://www.python.org/downloads/
+יש ראשית להוריד Python למחשב האישי שלכם, במידה ואין לכם, בקישור הבא: https://www.python.org/downloads/
 מומלץ להתקין גרסה 3.10 ומעלה. במהלך ההתקנה יש לסמן את האפשרות "Add Python to PATH" - זה חיוני להמשך ההתקנה.
-לאחר מכן יש להוריד git למחשב האישי שלכם, במידה ואין לכם, בקישור הבא:
-https://git-scm.com/downloads
+לאחר מכן יש להוריד git למחשב האישי שלכם, במידה ואין לכם, בקישור הבא: https://git-scm.com/downloads
 יש לבחור בהתקנה המתאימה למערכת ההפעלה שלכם. לאחר התקנת git, ניתן לוודא שההתקנה הצליחה על ידי פתיחת cmd והרצת הפקודה:
 git --version
 הורדת והתקנת הפרויקט
@@ -23,12 +20,11 @@ pip install -r requirements.txt
 פקודה זו תוריד את כל הספריות המצוינות תחת requirements.txt, אשר נחוצות להרצת הפרויקט. תהליך זה עשוי להימשך מספר דקות בהתאם למהירות האינטרנט שלכם.
 הורדת מודל הבינה המלאכותית
 במידה וקובץ המודל best (4).pt אינו קיים בתיקייה, יש להוריד אותו באמצעות הפקודה:
-python -c "from ultralytics import YOLO; YOLO('yolov11n.pt').save('best (4).pt')"
+python -c "from ultralytics import YOLO; YOLO('yolov8n.pt').save('best (4).pt')"
 הרצת המערכת
 לאחר השלמת כל השלבים הקודמים, ניתן להריץ את המערכת באמצעות הפקודה:
 python app.py
-פקודה זו תפעיל את שרת ה-Flask המקומי ותוכלו לגשת למערכת בכתובת:
-http://127.0.0.1:5000/
+פקודה זו תפעיל את שרת ה-Flask המקומי ותוכלו לגשת למערכת בכתובת: http://127.0.0.1:5000/
 יש ליצור חשבון משתמש באמצעות דף ההרשמה. אם ברצונכם להשתמש בהרשאות מנהל, יש להשתמש בכתובת האימייל lia.ninio24@gmail.com בעת ההרשמה.
 פתרון בעיות נפוצות
 בעיות עם התקנת Python
@@ -38,8 +34,7 @@ http://127.0.0.1:5000/
 pip install --upgrade pip
 pip install -r requirements.txt --no-cache-dir
 בעיות הפעלה במערכת Windows
-במקרה של שגיאות DLL ב-Windows, יש להוריד ולהתקין את Visual C++ Redistributable מהקישור:
-https://aka.ms/vs/17/release/vc_redist.x64.exe
+במקרה של שגיאות DLL ב-Windows, יש להוריד ולהתקין את Visual C++ Redistributable מהקישור: https://aka.ms/vs/17/release/vc_redist.x64.exe
 בעיות זיכרון בעת הרצת המערכת
 אם נתקלתם בשגיאות זיכרון, יש לפתוח את הקובץ app.py בעורך טקסט, למצוא את השורה עם DEVICE = "cuda" ולשנות אותה ל-DEVICE = "cpu".
 בעיות וידאו/מצלמה
