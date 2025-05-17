@@ -10,3 +10,6 @@ python-dotenv==1.0.0
 Flask-WTF==1.2.1
 Jinja2==3.1.2
 gunicorn==21.2.0
+fiftyone==0.21.0
+sahi==0.11.14
+huggingface_hub==0.17.3
