@@ -65,7 +65,7 @@ This file automatically configures Git to handle file encodings properly, so you
 2. Click on "Sign up" to create a new account
 3. Fill in the registration form:
    - Choose a username
-   - Enter your email address (if you want admin access, use: lia.ninio24@gmail.com)
+   - Enter your email address (if you want admin access, change: lia.ninio24@gmail.com to your email in the app.py code)
    - Create a password
 4. Click "Sign Up" to create your account
 5. Log in with your new credentials
