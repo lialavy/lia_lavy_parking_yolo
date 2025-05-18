@@ -1,5 +1,3 @@
-I understand. Let me create a more direct and user-friendly tutorial:
-
 # Parking Space Detection System
 
 ## Setup Instructions
@@ -14,14 +12,14 @@ I understand. Let me create a more direct and user-friendly tutorial:
    ```
    python -m venv venv
    venv\Scripts\activate  # Windows
-   source venv/bin/activate  # Mac/Linux
+   #source venv/bin/activate   Mac/Linux
    pip install -r requirements.txt
    ```
 
 3. **Download required files**
    - Download the YOLO model file (best (4).pt)
-   - Download sample videos (carPark.mp4)
-   - Place in the root directory
+   - Download sample videos (parkinglot1.mp4,parkinglot2.mp4,parkinglot1.mp4_snapshot.jpeg etc... even add your own videos and images!)
+   
 
 4. **Run the application**
    ```
@@ -31,7 +29,7 @@ I understand. Let me create a more direct and user-friendly tutorial:
 
 5. **Create account**
    - Sign up with any username/password
-   - For admin access: change the email: lia.ninio24@gmail.com to your email
+   - For admin access: use email lia.ninio24@gmail.com
 
 ## Usage
 
@@ -42,7 +40,27 @@ I understand. Let me create a more direct and user-friendly tutorial:
 
 - **Add parking lot**: Specify video source, model, and bounding boxes file
 - **Edit settings**: Modify existing parking lot configurations
-- **Path format**: Use filenames for included files or full paths for external files
+
+## IMPORTANT: Path Configuration
+
+**When adding or editing a parking lot, you MUST use the full absolute path to files, not just the filename:**
+
+- **CORRECT**: `C:/Users/YourName/lia_lavy_parking_yolo/best (4).pt`
+- **INCORRECT**: `best (4).pt`
+
+This applies to:
+- Model Path
+- Video Source
+- Bounding Boxes File
+
+Example for Windows:
+```
+Model Path: C:/Users/YourName/lia_lavy_parking_yolo/best (4).pt
+Video Source: C:/Users/YourName/lia_lavy_parking_yolo/carPark.mp4
+Bounding Boxes File: C:/Users/YourName/lia_lavy_parking_yolo/bounding_boxes.json
+```
+
+Use forward slashes (/) in paths, even on Windows.
 
 ## Troubleshooting
 
@@ -50,5 +68,4 @@ I understand. Let me create a more direct and user-friendly tutorial:
 - For slow performance, edit app.py to use CPU: `DEVICE = "cpu"`
 - Make sure model file (best (4).pt) exists in the project directory
 - Check video paths in settings match actual file locations
-
-Is this format better? I can adjust it further to meet your needs.
+- If you get path errors, verify you're using complete absolute paths
