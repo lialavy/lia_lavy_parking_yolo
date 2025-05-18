@@ -18,7 +18,7 @@
 
 3. **Download required files**
    - Download the YOLO model file (best (4).pt)
-   - Download sample videos (parkinglot1.mp4,parkinglot2.mp4,parkinglot1.mp4_snapshot.jpeg etc... even add your own videos and images!)
+   - Download sample videos (parkinglot1.mp4,parkinglot2.mp4,parkinglot1.mp4_snapshot.jpg etc... even add your own videos and images!)
    
 
 4. **Run the application**
@@ -55,12 +55,14 @@ This applies to:
 
 Example for Windows:
 ```
-Model Path: C:/Users/YourName/lia_lavy_parking_yolo/best (4).pt
-Video Source: C:/Users/YourName/lia_lavy_parking_yolo/carPark.mp4
-Bounding Boxes File: C:/Users/YourName/lia_lavy_parking_yolo/bounding_boxes.json
+Model Path: C:\Users\User\YourName\lia_lavy_parking_yolo\YOLO-Parking-Spot\best (4).pt
+Video Source: C:\Users\User\YourName\lia_lavy_parking_yolo\videos and screenshots\parkinglot1.mp4
+Bounding Boxes File: C:\Users\User\YourName\lia_lavy_parking_yolo\videos and screenshots\parkinglot1.mp4_snapshot.jpg
+Video Source: C:\Users\User\YourName\lia_lavy_parking_yolo\videos and screenshots\parkinglot2.mp4_snapshot.jpg
+Bounding Boxes File: C:\Users\User\YourName\lia_lavy_parking_yolo\videos and screenshots\parkinglot2.mp4_snapshot.jpg
+
 ```
 
-Use forward slashes (/) in paths, even on Windows.
 
 ## Troubleshooting
 
