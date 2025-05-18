@@ -1,0 +1,41 @@
+# Set default behavior to automatically normalize line endings
+* text=auto
+
+# Explicitly declare text files to be normalized
+*.py text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.html text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.cfg text eol=lf
+*.ini text eol=lf
+
+# Declare files that should always be treated as binary
+*.pt binary
+*.pth binary
+*.weights binary
+*.mp4 binary
+*.avi binary
+*.mov binary
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.pkl binary
+*.npy binary
+*.npz binary
+*.h5 binary
+*.pb binary
+
+# Specific treatment for your JSON bounding box files (adjust the filenames as needed)
+status.json binary
+users.json binary
+bounding_boxes.json binary
