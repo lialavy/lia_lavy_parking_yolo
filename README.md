@@ -29,7 +29,7 @@
 
 5. **Create account**
    - Sign up with any username/password
-   - For admin access: use email lia.ninio24@gmail.com
+   - For admin access: change email: lia.ninio24@gmail.com to your own email
 
 ## Usage
 
